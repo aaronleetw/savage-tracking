@@ -10,11 +10,45 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
+model User {
     id        Int      @id @default(autoincrement())
+    grade     Int?
+    class     String?
     name      String
+    username  String   @unique
+    password  String
+    isAdmin   Boolean  @default(false)
+
+    periods   Period[]
+
+    number    Int?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
     @@index([name])
+}
+
+model TimePeriod {
+    id        Int      @id
+    name      String
+    periods   Period[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([id])
+}
+
+model Period {
+    id        Int      @id @default(autoincrement())
+    date      DateTime
+    timePeriod TimePeriod @relation(fields: [timePeriodId], references: [id])
+    timePeriodId Int
+
+    users     User[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([date])
 }

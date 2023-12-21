@@ -6,9 +6,11 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
+        sans: ["Lato", "var(--font-sans)", ...fontFamily.sans],
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require("@tailwindcss/forms")
+  ],
 } satisfies Config;

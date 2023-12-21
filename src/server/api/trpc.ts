@@ -6,12 +6,14 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { TRPCError, initTRPC } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "~/server/db";
+import { PublicUserType } from "~/utils/types";
+import jwt from "jsonwebtoken";
 
 /**
  * 1. CONTEXT
@@ -24,29 +26,38 @@ import { db } from "~/server/db";
 type CreateContextOptions = Record<string, never>;
 
 /**
- * This helper generates the "internals" for a tRPC context. If you need to use it, you can export
- * it from here.
- *
- * Examples of things you may need it for:
- * - testing, so we don't have to mock Next.js' req/res
- * - tRPC's `createSSGHelpers`, where we don't have req/res
- *
- * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
- */
-const createInnerTRPCContext = (_opts: CreateContextOptions) => {
-  return {
-    db,
-  };
-};
-
-/**
  * This is the actual context you will use in your router. It will be used to process every request
  * that goes through your tRPC endpoint.
  *
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({});
+  // Get JWT from cookie
+  const token = _opts.req.cookies.token;
+
+  // Verify JWT
+  let session = PublicUserType.parse(undefined);
+  try {
+    jwt.verify(token || "", process.env.JWT_SECRET || "", (err, decoded) => {
+      if (err) {
+        session = undefined;
+      } else {
+        session = PublicUserType.parse(decoded);
+      }
+    });
+  } catch (err) {
+    session = undefined;
+  }
+
+  // Request and Response objects
+  const { req, res } = _opts;
+
+  return {
+    session,
+    db,
+    req,
+    res
+  };
 };
 
 /**
@@ -93,3 +104,24 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 export const publicProcedure = t.procedure;
+
+export const middleware = t.middleware;
+
+const isLoggedIn = middleware(async (opts) => {
+  const { ctx } = opts;
+  if (!ctx.session) {
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "Please log in" });
+  }
+  return opts.next(opts);
+})
+
+const isAdmin = middleware(async (opts) => {
+  const { ctx } = opts;
+  if (!ctx.session?.isAdmin) {
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "You are not an admin" });
+  }
+  return opts.next(opts);
+})
+
+export const loggedInProcedure = publicProcedure.use(isLoggedIn);
+export const adminProcedure = publicProcedure.use(isLoggedIn).use(isAdmin);
