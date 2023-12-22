@@ -13,13 +13,12 @@ export default function Home() {
   const { push } = useRouter();
   type LoginSchemaType = z.infer<typeof LoginSchema>;
   const { register, handleSubmit, formState: { errors } } = useForm<LoginSchemaType>({ resolver: zodResolver(LoginSchema) });
-  const onSubmit: SubmitHandler<LoginSchemaType> = async (data) => 
-    login.mutateAsync(data).catch((err) => console.log(err))
+  const onSubmit: SubmitHandler<LoginSchemaType> = async (data) => login.mutateAsync(data).catch((err) => console.log(err));
   useEffect(() => {
     if (login.isSuccess) {
       push("/dash")
     }
-  }, [login.isSuccess])
+  }, [login.isSuccess]);
 
   return (
     <>

@@ -17,7 +17,9 @@ model User {
     name      String
     username  String   @unique
     password  String
+    rfid      String?  @unique
     isAdmin   Boolean  @default(false)
+    rosterOnly Boolean @default(false)
 
     periods   Period[]
 
@@ -31,6 +33,10 @@ model User {
 model TimePeriod {
     id        Int      @id
     name      String
+
+    start     String
+    end       String
+
     periods   Period[]
 
     createdAt DateTime @default(now())
