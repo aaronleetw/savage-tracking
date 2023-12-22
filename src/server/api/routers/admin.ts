@@ -17,16 +17,7 @@ export const adminRouter = createTRPCRouter({
             }).then((user) => {
                 const result = compareSync(input.password, user?.password || "");
                 if (result) {
-                    console.log(user)
-                    console.log(PublicUserType.parse({
-                        grade: user?.grade,
-                        class: user?.class,
-                        name: user?.name,
-                        username: user?.username,
-                        isAdmin: user?.isAdmin,
-                    }))
                     const session = PublicUserType.parse(user)!;
-                    console.log(session)
                     const token = jwt.sign(session, process.env.JWT_SECRET || "", { expiresIn: "1d" });
                     ctx.res.setHeader("Set-Cookie", `token=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${60 * 60 * 24};`);
                     return {

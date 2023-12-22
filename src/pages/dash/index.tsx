@@ -24,7 +24,7 @@ export default function Dash() {
             <link rel="icon" href="/favicon.png" />
         </Head>
         <main className="">
-            <DashboardHeader />
+            <DashboardHeader url="/dash" />
         </main>
     </>)
 }
