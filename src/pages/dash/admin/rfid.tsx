@@ -10,6 +10,8 @@ export default function Dash() {
     const users = api.admin.getAllUsers.useQuery();
     const lastRfid = api.admin.getLastRfid.useQuery();
     const setUserRfid = api.admin.setUserRfid.useMutation();
+    const rfidAttendance = api.admin.rfidAttendance.useQuery();
+    const toggleRfidAttendance = api.admin.toggleRfidAttendance.useMutation();
 
     useEffect(() => {
         if (isLoggedIn.failureCount > 0) {
@@ -37,6 +39,15 @@ export default function Dash() {
         <main className="">
             <DashboardHeader url="/dash/admin/rfid" />
             <div className="m-5">
+                RFID Attendance: {rfidAttendance.data?.rfidAttendance ? "Enabled" : "Disabled"}
+                <button className={[
+                    "p-1 px-2 text-lg font-bold rounded mb-2 ml-2 text-white transition-colors",
+                    rfidAttendance.data?.rfidAttendance ? "bg-yellow-600 hover:bg-yellow-700" : "bg-green-600 hover:bg-green-700"
+                ].join(" ")} onClick={() => toggleRfidAttendance.mutateAsync()
+                    .then(() => rfidAttendance.refetch())
+                    .catch((err) => console.log(err))}>
+                    {rfidAttendance.data?.rfidAttendance ? "Disable" : "Enable"}
+                </button>
                 <table className="table-auto border-collapse border-2 border-black w-fit">
                     <thead>
                         <tr className="*:p-1 *:border border-b-2 border-b-black">
@@ -60,6 +71,7 @@ export default function Dash() {
                                     <td>{user.name}</td>
                                     <td>{user.rfid}</td>
                                     <td className="text-emerald-600 underline text-center hover:cursor-pointer" onClick={() => {
+                                        if (lastRfid.data === "") return;
                                         setUserRfid.mutateAsync({
                                             username: user.username,
                                             rfid: lastRfid.data || ""

@@ -54,7 +54,10 @@ export default function Periods() {
                                         if (periods.data![date]![periodCnt]?.timePeriodId == timePeriod.id) {
                                             periodCnt++;
                                             return (<td key={timePeriod.id * periodCnt} className="bg-emerald-600 text-white hover:cursor-pointer"
-                                                onClick={() => disablePeriod.mutateAsync(periods.data![date]![thisPeriodCnt]!.id!).then(() => periods.refetch())}>
+                                                onClick={() => disablePeriod.mutateAsync({
+                                                    date: date,
+                                                    timePeriodId: periods.data![date]![thisPeriodCnt]!.timePeriodId
+                                                }).then(() => periods.refetch())}>
                                                     Disable
                                                 </td>)
                                         } else {
@@ -73,6 +76,7 @@ export default function Periods() {
                 }
             </tbody>
         </table>
+        <p className="text-red-500 font-bold mb-5">WARNING: Disabling periods will cause records to be deleted as well!</p>
         <hr />
         <h2 className="text-xl font-bold mt-5">Add Date</h2>
         <form onSubmit={handleSubmit(onSubmit)}>

@@ -6,7 +6,7 @@ import { AddPeriods, AddTimePeriodSchema, AddUserSchema, ChgPasswordSchema, Logi
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { Period } from "@prisma/client";
-import { lastGotRfid } from "~/utils/rfid";
+import { lastGotRfid, rfidAttendance, setRfidAttendance } from "~/utils/rfid";
 
 export const adminRouter = createTRPCRouter({
     isLoggedIn: loggedInProcedure.query(() => true),
@@ -220,7 +220,18 @@ export const adminRouter = createTRPCRouter({
     addPeriods: adminProcedure
         .input(AddPeriods)
         .mutation(async ({ input, ctx }) => {
-            await ctx.db.timePeriod.findMany().then(
+            const period = await ctx.db.period.findFirst({
+                where: {
+                    date: new Date(input.date),
+                },
+            });
+            if (period !== null) {
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "Periods with date already exist.",
+                })
+            }
+            return await ctx.db.timePeriod.findMany().then(
                 async (timePeriods) => {
                     timePeriods.forEach(async (timePeriod) => {
                         await ctx.db.period.create({
@@ -249,6 +260,16 @@ export const adminRouter = createTRPCRouter({
             timePeriodId: z.number().int(),
         }))
         .mutation(async ({ input, ctx }) => {
+            // if data exists, do nothing
+            const period = await ctx.db.period.findFirst({
+                where: {
+                    date: new Date(input.date),
+                    timePeriodId: input.timePeriodId,
+                },
+            });
+            if (period !== null) {
+                return period;
+            }
             return await ctx.db.period.create({
                 data: {
                     date: new Date(input.date),
@@ -257,11 +278,15 @@ export const adminRouter = createTRPCRouter({
             })
         }),
     disablePeriod: adminProcedure
-        .input(z.number().int())
+        .input(z.object({
+            date: z.string(),
+            timePeriodId: z.number().int(),
+        }))
         .mutation(async ({ input, ctx }) => {
-            return await ctx.db.period.delete({
+            return await ctx.db.period.deleteMany({
                 where: {
-                    id: input,
+                    date: new Date(input.date),
+                    timePeriodId: input.timePeriodId,
                 },
             })
         }),
@@ -283,5 +308,20 @@ export const adminRouter = createTRPCRouter({
                     rfid: input.rfid,
                 },
             })
+        }),
+    rfidAttendance: adminProcedure
+        .query(() => {
+            return {
+                status: "success",
+                rfidAttendance: rfidAttendance,
+            }
+        }),
+    toggleRfidAttendance: adminProcedure
+        .mutation(() => {
+            setRfidAttendance(!rfidAttendance);
+            return {
+                status: "success",
+                message: "RFID attendance toggled.",
+            };
         }),
 });
