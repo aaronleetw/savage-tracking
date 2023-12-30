@@ -30,6 +30,7 @@ export default function Users() {
                             <th>Class</th>
                             <th>Number</th>
                             <th>Name</th>
+                            <th>Display Name</th>
                             <th>RFID</th>
                             <th>Admin?</th>
                             <th>Roster Only?</th>
@@ -45,6 +46,7 @@ export default function Users() {
                                     <td>{user.class}</td>
                                     <td>{user.number}</td>
                                     <td>{user.name}</td>
+                                    <td>{user.dname}</td>
                                     <td>{user.rfid}</td>
                                     <td className="text-sky-600 underline text-center hover:cursor-pointer"
                                         onClick={() => toggleAdmin.mutateAsync(user.username).then(() => users.refetch())}
@@ -96,6 +98,11 @@ export default function Users() {
                 <label className="block text-md font-medium text-gray-700 mt-2">Name</label>
                 <input type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-70" {...register("name")} />
                 {errors.name && <span className="text-red-500">{errors.name.message}</span>}
+            </div>
+            <div className="mb-5">
+                <label className="block text-md font-medium text-gray-700 mt-2">Display Name</label>
+                <input type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-70" {...register("dname")} />
+                {errors.dname && <span className="text-red-500">{errors.dname.message}</span>}
             </div>
             <button className="bg-emerald-600 px-3 py-2 rounded text-white focus:ring focus:ring-emerald-200 focus:ring-opacity-70 disabled:bg-emerald-400 mb-5" disabled={addUser.isLoading}>
               Add User

@@ -15,6 +15,7 @@ model User {
     grade     Int?
     class     String?
     name      String
+    dname     String
     username  String   @unique
     password  String
     rfid      String?  @unique
@@ -22,6 +23,7 @@ model User {
     rosterOnly Boolean @default(false)
 
     periods   Period[]
+    attendance Attendance[]
 
     number    Int?
     createdAt DateTime @default(now())
@@ -48,8 +50,9 @@ model TimePeriod {
 model Period {
     id        Int      @id @default(autoincrement())
     date      DateTime
-    timePeriod TimePeriod @relation(fields: [timePeriodId], references: [id])
+    timePeriod TimePeriod @relation(fields: [timePeriodId], references: [id], onDelete: Cascade)
     timePeriodId Int
+    collecting Boolean @default(true)
 
     users     User[]
 
@@ -57,4 +60,16 @@ model Period {
     updatedAt DateTime @updatedAt
 
     @@index([date])
+}
+
+model Attendance {
+    id        Int      @id @default(autoincrement())
+    datetime  DateTime
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId    Int
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([datetime])
 }

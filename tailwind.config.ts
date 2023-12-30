@@ -7,6 +7,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Lato", "var(--font-sans)", ...fontFamily.sans],
+        kai: ["var(--font-kai)", "Lato", ...fontFamily.serif],
       },
     },
   },

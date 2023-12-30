@@ -26,6 +26,7 @@ export const timeSelRouter = createTRPCRouter({
         }))
         .mutation(async ({ ctx, input }) => {
             try {
+
                 if (input.attendance) {
                     await ctx.db.period.update({
                         where: { id: input.periodId },
@@ -85,5 +86,94 @@ export const timeSelRouter = createTRPCRouter({
                 total += (end.getTime() - start.getTime()) / 1000 / 60 / 60; // convert to hours
             })
             return total;
+        }),
+    getMyAttendance: loggedInProcedure
+        .query(async ({ ctx }) => {
+            return await ctx.db.attendance.findMany({
+                where: {
+                    user: {
+                        username: ctx.session?.username,
+                    }
+                },
+                select: {
+                    datetime: true,
+                },
+                orderBy: {
+                    datetime: "asc",
+                },
+            });
+        }),
+    actualAttendTime: loggedInProcedure
+        .query(async ({ ctx }) => {
+            const attendance = await ctx.db.attendance.findMany({
+                where: {
+                    user: {
+                        username: ctx.session?.username,
+                    }
+                },
+                select: {
+                    datetime: true,
+                },
+                orderBy: {
+                    datetime: "asc",
+                },
+            });
+            const dates = await ctx.db.period.findMany({
+                select: {
+                    date: true,
+                },
+                orderBy: {
+                    date: "asc",
+                }
+            }).then((periods) => {
+                const dates: string[] = [];
+                periods.forEach(period => {
+                    const dateStr = period.date.toLocaleDateString();
+                    if (!dates.includes(dateStr)) dates.push(dateStr);
+                })
+                return dates;
+            })
+            const timePeriods = await ctx.db.timePeriod.findMany({
+                select: {
+                    start: true,
+                    end: true,
+                },
+                orderBy: [
+                    { start: "asc" },
+                    { end: "asc" },
+                ]
+            });
+            let attCnt = 0;
+            let calculator = 0.0;
+            dates.forEach((date) => {
+                let periodCnt = 0;
+                let entered = false;
+                timePeriods.forEach((timePeriod) => {
+                    periodCnt++;
+                    const thisPeriodStart = new Date(date);
+                    thisPeriodStart.setHours(parseInt(timePeriod.start.split(":")[0]!), parseInt(timePeriod.start.split(":")[1]!), 0, 0)
+                    const thisPeriodEnd = new Date(date);
+                    thisPeriodEnd.setHours(parseInt(timePeriod.end.split(":")[0]!), parseInt(timePeriod.end.split(":")[1]!), 0, 0)
+
+                    for (let i = attCnt; i < attendance.length; i++) {
+                        const thisAtt = attendance[i]!;
+                        if (thisAtt.datetime < thisPeriodStart) continue;
+                        if (thisAtt.datetime > thisPeriodEnd) {
+                            attCnt = i;
+                            break;
+                        }
+                        if (!entered) {
+                            calculator -= thisAtt.datetime.getTime();
+                        } else {
+                            calculator += thisAtt.datetime.getTime();
+                        }
+                        entered = !entered;
+                    }
+                    if (entered && periodCnt === timePeriods.length) {
+                        calculator += thisPeriodEnd.getTime();
+                    }
+                })
+            })
+            return calculator / 1000 / 60 / 60;
         }),
 });

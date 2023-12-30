@@ -40,7 +40,7 @@ export default function DashboardHeader({ url }: { url: string }) {
                                     "text-sm md:text-xl px-3 py-2 rounded-lg rounded-b-none focus:ring focus:ring-sky-200 focus:ring-opacity-70",
                                     url == "/dash" ? "bg-sky-600 text-white" : "bg-sky-300 text-black"
                                 ].join(" ")}>
-                                    Time Selection
+                                    Attendance
                                 </button>
                             </Link>
                             <Link href="/dash/chgPassword">
@@ -61,7 +61,7 @@ export default function DashboardHeader({ url }: { url: string }) {
                                         "text-sm md:text-xl px-3 py-2 rounded-lg rounded-b-none focus:ring focus:ring-emerald-200 focus:ring-opacity-70",
                                         url == "/dash/admin/roster" ? "bg-emerald-600 text-white" : "bg-emerald-200 text-black"
                                     ].join(" ")}>
-                                        View Roster
+                                        Roster
                                     </button>
                                 </Link>
                                 {
@@ -71,7 +71,7 @@ export default function DashboardHeader({ url }: { url: string }) {
                                                 "text-sm md:text-xl px-3 py-2 rounded-lg rounded-b-none focus:ring focus:ring-emerald-200 focus:ring-opacity-70",
                                                 url == "/dash/admin" ? "bg-emerald-600 text-white" : "bg-emerald-200 text-black"
                                             ].join(" ")}>
-                                                Admin
+                                                Settings
                                             </button>
                                         </Link>
                                         <Link href="/dash/admin/rfid">
@@ -79,7 +79,7 @@ export default function DashboardHeader({ url }: { url: string }) {
                                                 "text-sm md:text-xl px-3 py-2 rounded-lg rounded-b-none focus:ring focus:ring-emerald-200 focus:ring-opacity-70",
                                                 url == "/dash/admin/rfid" ? "bg-emerald-600 text-white" : "bg-emerald-200 text-black"
                                             ].join(" ")}>
-                                                RFID Setup
+                                                RFID
                                             </button>
                                         </Link>
                                     </>)

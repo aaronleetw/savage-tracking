@@ -21,9 +21,9 @@ export default function Config() {
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div>
                     <p className="text-xl font-bold mb-1">Current time periods:</p>
-                    <table className="table-auto border-collapse border w-fit">
+                    <table className="table-auto border-collapse w-fit border-2 border-black">
                         <thead>
-                            <tr className="*:p-1 *:border">
+                            <tr className="*:p-1 *:border border-b-2 border-b-black">
                                 <th>ID</th>
                                 <th>Name</th>
                                 <th>Start</th>
@@ -50,16 +50,16 @@ export default function Config() {
                             }
                             <tr className="*:p-1 *:border">
                                 <td>
-                                    <input type="number" className="mt-1 block w-16 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-70" placeholder="ID" {...register("id")} />
+                                    <input type="number" className="mt-1 block w-16 rounded-md border-gray-300 shadow-sm focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-70" placeholder="ID" {...register("id")} />
                                 </td>
                                 <td>
-                                    <input type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-70" placeholder="Name" {...register("name")} />
+                                    <input type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-70" placeholder="Name" {...register("name")} />
                                 </td>
                                 <td>
-                                    <input type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-70" placeholder="Start" {...register("startTime")} />
+                                    <input type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-70" placeholder="Start" {...register("startTime")} />
                                 </td>
                                 <td>
-                                    <input type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-70" placeholder="End" {...register("endTime")} />
+                                    <input type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-70" placeholder="End" {...register("endTime")} />
                                 </td>
                                 <td className="text-center">
                                     <button className="p-1 px-2 bg-emerald-600 text-white rounded-lg" type="submit">Add</button>

@@ -121,6 +121,7 @@ export const adminRouter = createTRPCRouter({
                 select: {
                     username: true,
                     name: true,
+                    dname: true,
                     grade: true,
                     class: true,
                     number: true,
@@ -185,6 +186,7 @@ export const adminRouter = createTRPCRouter({
                 data: {
                     username: input.username,
                     name: input.name,
+                    dname: input.dname,
                     grade: input.grade,
                     class: input.class,
                     number: input.number,
@@ -203,11 +205,11 @@ export const adminRouter = createTRPCRouter({
             }).then((periods) => {
                 const groupedPeriods: { [key: string]: Period[] } = {};
                 periods.forEach((period) => {
-                    const utcDate = period.date.toLocaleDateString();
-                    if (groupedPeriods[utcDate] === undefined) {
-                        groupedPeriods[utcDate] = [];
+                    const dateStr = period.date.toLocaleDateString();
+                    if (groupedPeriods[dateStr] === undefined) {
+                        groupedPeriods[dateStr] = [];
                     }
-                    groupedPeriods[utcDate]?.push(period);
+                    groupedPeriods[dateStr]?.push(period);
                 });
                 return groupedPeriods;
             }).catch((err) => {
@@ -309,19 +311,110 @@ export const adminRouter = createTRPCRouter({
                 },
             })
         }),
-    rfidAttendance: adminProcedure
+    getRfidAttendanceForDash: adminProcedure
         .query(() => {
             return {
-                status: "success",
                 rfidAttendance: rfidAttendance,
             }
         }),
-    toggleRfidAttendance: adminProcedure
+    rfidAttendance: publicProcedure
+        .input(z.object({ rfid: z.string().regex(/^[0-9a-f]{8}$/i), key: z.string() }))
+        .query(async ({ input, ctx }) => {
+            if (input.key !== process.env.RFID_PKEY) {
+                return {
+                    status: "ERR_BADKEY",
+                }
+            }
+            return await ctx.db.attendance.create({
+                data: {
+                    datetime: new Date(),
+                    user: {
+                        connect: {
+                            rfid: input.rfid,
+                        },
+                    },
+                }
+            }).then(async () => {
+                const records = await ctx.db.attendance.findMany({
+                    where: {
+                        datetime: {
+                            gte: new Date(new Date().setHours(0, 0, 0, 0)),
+                            lt: new Date(new Date().setHours(23, 59, 59, 999)),
+                        },
+                        user: {
+                            rfid: input.rfid,
+                        },
+                    },
+                    select: {
+                        user: {
+                            select: {
+                                dname: true,
+                            },
+                        },
+                    },
+                    orderBy: {
+                        datetime: "asc",
+                    },
+                })
+                return {
+                    status: records.length % 2 ? "WELCOME" : "GOODBYE",
+                    name: records[records.length - 1]!.user.dname,
+                }
+            }).catch((err) => {
+                return {
+                    status: "ERR_INTERNAL",
+                }
+            })
+        }),
+    toggleRfidAttendanceForDash: adminProcedure
         .mutation(() => {
             setRfidAttendance(!rfidAttendance);
             return {
                 status: "success",
                 message: "RFID attendance toggled.",
             };
+        }),
+    getRoster: adminProcedure
+        .input(z.object({ date: z.date()}))
+        .query(async ({ input, ctx }) => {
+            return await ctx.db.user.findMany({
+                where: {
+                    periods: {
+                        some: {
+                            date: input.date,
+                        },
+                    }
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    grade: true,
+                    class: true,
+                    number: true,
+                    periods: {
+                        where: {
+                            date: input.date,
+                        },
+                        select: {
+                            timePeriod: {
+                                select: {
+                                    id: true,
+                                },
+                            },
+                        },
+                    },
+                },
+                orderBy: [
+                    {
+                        grade: "asc",
+                    },
+                    {
+                        class: "asc",
+                    },
+                    {
+                        number: "asc",
+                    },
+                ]
+            })
         }),
 });

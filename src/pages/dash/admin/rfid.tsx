@@ -10,8 +10,8 @@ export default function Dash() {
     const users = api.admin.getAllUsers.useQuery();
     const lastRfid = api.admin.getLastRfid.useQuery();
     const setUserRfid = api.admin.setUserRfid.useMutation();
-    const rfidAttendance = api.admin.rfidAttendance.useQuery();
-    const toggleRfidAttendance = api.admin.toggleRfidAttendance.useMutation();
+    const rfidAttendance = api.admin.getRfidAttendanceForDash.useQuery();
+    const toggleRfidAttendance = api.admin.toggleRfidAttendanceForDash.useMutation();
 
     useEffect(() => {
         if (isLoggedIn.failureCount > 0) {

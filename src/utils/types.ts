@@ -29,6 +29,7 @@ export const AddTimePeriodSchema = z.object({
 export const AddUserSchema = z.object({
     username: z.string().min(1, { message: "Username cannot be empty." }),
     name: z.string().min(1, { message: "Name cannot be empty." }),
+    dname: z.string().min(1, { message: "Display name cannot be empty." }).regex(/^[a-z0-9_\-]+$/i, { message: "Display name must only contain letters, numbers, underscores, and dashes." }),
     grade: z.coerce.number().int().nullable(),
     class: z.string().nullable(),
     number: z.coerce.number().int().nullable(),
