@@ -36,5 +36,15 @@ export const AddUserSchema = z.object({
 })
 
 export const AddPeriods = z.object({
-    date: z.string().regex(/^20[2-3][0-9]\/(0?[1-9]|1[0-2]){1}\/(0?[1-9]|1[0-9]|2[0-9]|3[0-1]){1}$/, { message: "Periods must be in the format YYYY/MM/DD."})
+    date: z.string().regex(/^20[2-3][0-9]-(0?[1-9]|1[0-2]){1}-(0?[1-9]|1[0-9]|2[0-9]|3[0-1]){1}$/, { message: "Periods must be in the format YYYY/MM/DD."})
+})
+
+export const DateRange = z.object({
+    start: z.string().regex(/^20[2-3][0-9]-(0?[1-9]|1[0-2]){1}-(0?[1-9]|1[0-9]|2[0-9]|3[0-1]){1}$/, { message: "Start date must be in the format YYYY/MM/DD."}),
+    end: z.string().regex(/^20[2-3][0-9]-(0?[1-9]|1[0-2]){1}-(0?[1-9]|1[0-9]|2[0-9]|3[0-1]){1}$/, { message: "End date must be in the format YYYY/MM/DD."}),
+})
+
+export const AddAttendance = z.object({
+    datetime: z.string().regex(/^20[2-3][0-9]-(0?[1-9]|1[0-2]){1}-(0?[1-9]|1[0-9]|2[0-9]|3[0-1]){1}T(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/, { message: "Datetime must be in the format YYYY/MM/DDThh:mm."}),
+    username: z.string().min(1, { message: "Username cannot be empty." }),
 })

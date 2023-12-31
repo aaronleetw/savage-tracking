@@ -21,10 +21,9 @@ export default function Dash() {
 
     useEffect(() => {
         if (lastRfid.isSuccess) {
-            const interval = setInterval(() => {
+            setInterval(() => {
                 lastRfid.refetch();
             }, 2000);
-            return () => clearInterval(interval);
         }
     }, [])
 

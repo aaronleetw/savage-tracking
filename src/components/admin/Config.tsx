@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { api } from "~/utils/api";
@@ -56,10 +57,10 @@ export default function Config() {
                                     <input type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-70" placeholder="Name" {...register("name")} />
                                 </td>
                                 <td>
-                                    <input type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-70" placeholder="Start" {...register("startTime")} />
+                                    <input type="time" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-70" placeholder="Start" {...register("startTime")} />
                                 </td>
                                 <td>
-                                    <input type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-70" placeholder="End" {...register("endTime")} />
+                                    <input type="time" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-70" placeholder="End" {...register("endTime")} />
                                 </td>
                                 <td className="text-center">
                                     <button className="p-1 px-2 bg-emerald-600 text-white rounded-lg" type="submit">Add</button>

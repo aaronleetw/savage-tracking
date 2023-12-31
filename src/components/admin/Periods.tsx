@@ -83,7 +83,7 @@ export default function Periods() {
             <div className="flex gap-3">
                 <div className="mb-2">
                     <label className="block text-md font-medium text-gray-700 mt-2">Date</label>
-                    <input type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-70" {...register("date")} />
+                    <input type="date" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-300 focus:ring focus:ring-emerald-200 focus:ring-opacity-70" {...register("date")} />
                     {errors.date && <span className="text-red-500">{errors.date.message}</span>}
                 </div>
                 <button className="block w-fit h-fit mt-9 bg-emerald-600 px-3 py-2 rounded text-white focus:ring focus:ring-emerald-200 focus:ring-opacity-70 disabled:bg-emerald-400 mb-5" disabled={addPeriods.isLoading}>

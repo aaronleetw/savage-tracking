@@ -1,5 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { parse } from "papaparse";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { api } from "~/utils/api";
@@ -18,6 +20,9 @@ export default function Users() {
         event?.target.reset();
         users.refetch();
     }).catch((err) => console.log(err));
+
+    const [bulkErrors, setBulkErrors] = useState<string[]>([]);
+    const [bulkSuccesses, setBulkSuccesses] = useState<string[]>([]);
 
     return (<div>
         <section>
@@ -48,11 +53,15 @@ export default function Users() {
                                     <td>{user.name}</td>
                                     <td>{user.dname}</td>
                                     <td>{user.rfid}</td>
-                                    <td className="text-sky-600 underline text-center hover:cursor-pointer"
-                                        onClick={() => toggleAdmin.mutateAsync(user.username).then(() => users.refetch())}
+                                    <td className={[
+                                        "text-sky-600 underline text-center hover:cursor-pointer",
+                                        user.isAdmin ? "bg-emerald-300" : ""
+                                    ].join(" ")} onClick={() => toggleAdmin.mutateAsync(user.username).then(() => users.refetch())}
                                     >{user.isAdmin ? "V" : "X"}</td>
-                                    <td className="text-sky-600 underline text-center hover:cursor-pointer"
-                                        onClick={() => toggleRosterOnly.mutateAsync(user.username).then(() => users.refetch())}
+                                    <td className={[
+                                        "text-sky-600 underline text-center hover:cursor-pointer",
+                                        user.rosterOnly ? "bg-emerald-300" : ""
+                                    ].join(" ")} onClick={() => toggleRosterOnly.mutateAsync(user.username).then(() => users.refetch())}
                                     >{user.rosterOnly ? "V" : "X"}</td>
                                     <td className="text-center">
                                         <button className="p-1 px-2 bg-yellow-600 text-white rounded-lg" onClick={(evt) => {
@@ -71,7 +80,25 @@ export default function Users() {
         </section>
         <p className="my-2">For editing rows, please use backend SQL.</p>
         <p className="my-2">Roster Only users must also be Admin.</p>
-        <hr />
+        <hr className="my-5" />
+        <h2 className="text-xl mt-5 mb-2 font-bold">Bulk create new users (上傳即更新)</h2>
+        <input className="my-1" type="file" accept=".csv" onChange={(evt) => {
+            if (!(evt.target.files && evt.target.files.length == 1)) return;
+            setBulkErrors([]);
+            parse(evt.target.files[0]!, { header: true, complete: async (results) => {
+                results.data.forEach(async (row) => {
+                    await addUser.mutateAsync(row as AddUserSchemaType)
+                        .then((row) => setBulkSuccesses((prev) => [...prev, row.username]))
+                        .catch((err) => setBulkErrors((prev) => [...prev, err.message]));
+                })
+                users.refetch();
+            } })
+        }} />
+        {addUser.isLoading && <p className="text-yellow-500">Adding user...</p>}
+        {bulkSuccesses.length > 0 && bulkSuccesses.map((username) => <p className="text-emerald-500">Success: {username}</p>)}
+        {bulkErrors.length > 0 && bulkErrors.map((err) => <p className="text-red-500">{err}</p>)}
+        <p className="my-1">CSV format: username,grade,class,number,name,dname</p>
+        <hr className="my-5" />
         <h2 className="text-xl mt-5 mb-2 font-bold">Create new user</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-5">

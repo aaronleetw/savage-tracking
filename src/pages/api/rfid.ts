@@ -36,7 +36,7 @@ export default async function handler(
                 return;
             }
         } else {
-            res.status(200).json({ status: 'RFID_ATTENDANCE_NOT_ENABLED' });
+            res.status(202).json({ status: 'RFID_ATTENDANCE_NOT_ENABLED' });
         }
     }
     else {

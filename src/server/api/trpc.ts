@@ -60,6 +60,8 @@ export const createTRPCContext = (_opts: CreateNextContextOptions) => {
   };
 };
 
+export type Context = ReturnType<typeof createTRPCContext>;
+
 /**
  * 2. INITIALIZATION
  *

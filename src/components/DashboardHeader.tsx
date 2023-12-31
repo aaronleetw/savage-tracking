@@ -15,7 +15,7 @@ export default function DashboardHeader({ url }: { url: string }) {
     }, [logout.isSuccess])
 
     useEffect(() => {
-        if (session.data?.rosterOnly && !url.startsWith("/dash/admin/roster"))
+        if (session.data?.rosterOnly && !(url.startsWith("/dash/admin/roster") || url.startsWith("/dash/admin/attendance") || url.startsWith("/dash/chgPassword")))
             push("/dash/admin/roster");
     }, [session.data])
 
@@ -34,7 +34,7 @@ export default function DashboardHeader({ url }: { url: string }) {
                 </div>
                 <div className="flex items-center w-full gap-3">
                     {
-                        !session?.data?.rosterOnly && (<>
+                        !session?.data?.rosterOnly && (
                             <Link href="/dash">
                                 <button className={[
                                     "text-sm md:text-xl px-3 py-2 rounded-lg rounded-b-none focus:ring focus:ring-sky-200 focus:ring-opacity-70",
@@ -42,17 +42,16 @@ export default function DashboardHeader({ url }: { url: string }) {
                                 ].join(" ")}>
                                     Attendance
                                 </button>
-                            </Link>
-                            <Link href="/dash/chgPassword">
-                                <button className={[
-                                    "text-sm md:text-xl px-3 py-2 rounded-lg rounded-b-none focus:ring focus:ring-sky-200 focus:ring-opacity-70",
-                                    url == "/dash/chgPassword" ? "bg-sky-600 text-white" : "bg-sky-300 text-black"
-                                ].join(" ")}>
-                                    Change Password
-                                </button>
-                            </Link>
-                        </>)
+                            </Link>)
                     }
+                    <Link href="/dash/chgPassword">
+                        <button className={[
+                            "text-sm md:text-xl px-3 py-2 rounded-lg rounded-b-none focus:ring focus:ring-sky-200 focus:ring-opacity-70",
+                            url == "/dash/chgPassword" ? "bg-sky-600 text-white" : "bg-sky-300 text-black"
+                        ].join(" ")}>
+                            Change Password
+                        </button>
+                    </Link>
                     {
                         session?.data?.isAdmin && (
                             <>
@@ -62,6 +61,14 @@ export default function DashboardHeader({ url }: { url: string }) {
                                         url == "/dash/admin/roster" ? "bg-emerald-600 text-white" : "bg-emerald-200 text-black"
                                     ].join(" ")}>
                                         Roster
+                                    </button>
+                                </Link>
+                                <Link href="/dash/admin/attendance">
+                                    <button className={[
+                                        "text-sm md:text-xl px-3 py-2 rounded-lg rounded-b-none focus:ring focus:ring-emerald-200 focus:ring-opacity-70",
+                                        url == "/dash/admin/attendance" ? "bg-emerald-600 text-white" : "bg-emerald-200 text-black"
+                                    ].join(" ")}>
+                                        Attendance
                                     </button>
                                 </Link>
                                 {

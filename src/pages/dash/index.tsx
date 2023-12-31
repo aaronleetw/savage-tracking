@@ -19,13 +19,6 @@ export default function Dash() {
     let attCnt = 0;
     let entered = false;
 
-    const fuseDateAndTime = (date: string, time: Date) => {
-        const year = new Date(date).getFullYear();
-        const month = new Date(date).getMonth();
-        const day = new Date(date).getDate();
-        return new Date(year, month, day, time.getHours(), time.getMinutes(), time.getSeconds(), time.getMilliseconds());
-    }
-
     useEffect(() => {
         if (isLoggedIn.failureCount > 0) {
             push("/");
@@ -44,26 +37,29 @@ export default function Dash() {
             <DashboardHeader url="/dash" />
             <div className="p-5">
                 <div className="flex gap-2">
-                    <div className={[
-                            "border rounded-xl h-32 w-40 p-2 flex items-center justify-center flex-col mb-5",
-                            (attendTime.data || 0) >= 30 ? "bg-emerald-500" : "bg-red-300"
-                        ].join(" ")}>
+                    <div className="border rounded-xl h-32 w-40 p-2 flex items-center justify-center flex-col mb-5 bg-gray-300">
                         <div className="text-center text-2xl font-bold">已選取時數</div>
                         <div className="flex-grow flex items-center">
                             <div className="text-center text-6xl font-bold">{attendTime.data}</div>
                         </div>
                     </div>
-                    <div className={[
-                            "border rounded-xl h-32 w-40 p-2 flex items-center justify-center flex-col mb-5",
-                            (actualAttendTime.data || 0) >= 30 ? "bg-emerald-500" : "bg-red-300"
-                        ].join(" ")}>
+                    <div className="border rounded-xl h-32 w-40 p-2 flex items-center justify-center flex-col mb-5 bg-gray-300">
                         <div className="text-center text-xl font-bold">實際出席時數</div>
                         <div className="flex-grow flex items-center">
-                            <div className="text-center text-6xl font-bold">{actualAttendTime.data?.toPrecision(2)}</div>
+                            <div className="text-center text-6xl font-bold">{actualAttendTime.data?.toFixed(1)}</div>
+                        </div>
+                    </div>
+                    <div className={[
+                            "border rounded-xl h-32 w-40 p-2 flex items-center justify-center flex-col mb-5",
+                            (actualAttendTime.data || 0) + (attendTime.data || 0) >= 30 ? "bg-emerald-500" : "bg-red-300"
+                        ].join(" ")}>
+                        <div className="text-center text-xl font-bold">預估總時數</div>
+                        <div className="flex-grow flex items-center">
+                            <div className="text-center text-6xl font-bold">{((actualAttendTime.data || 0) + (attendTime.data || 0)).toFixed(1)}</div>
                         </div>
                     </div>
                 </div>
-                <div className="text-2xl font-bold mb-2">請點選下方切換狀態 (上方綠燈 &gt; 100)</div>
+                <div className="text-2xl font-bold mb-2">請點選下方切換狀態 (&gt; 100 小時會變綠燈)</div>
                 <table className="table-auto border-collapse border-2 border-black w-fit mb-5">
                     <thead>
                         <tr className="*:p-1 *:border border-b-2 border-b-black">
@@ -84,8 +80,7 @@ export default function Dash() {
                                     <tr className="*:p-1 *:border" key={date}>
                                         <td>{date}</td>
                                         {
-                                            // TODO: fix this very ugly code
-                                            new Date(new Date(date).setDate(new Date(date).getDate() - 1)).setHours(23, 59, 59, 999) > new Date().getTime() ? (
+                                            new Date(date).setHours(0, 0, 0, 0) > new Date().getTime() ? (
                                                 timePeriods.data?.map((timePeriod) => {
                                                     const thisPeriodId = periods.data![date]![periodCnt]?.id!;
                                                     if (periods.data![date]![periodCnt]?.timePeriodId == timePeriod.id) {
@@ -95,7 +90,7 @@ export default function Dash() {
                                                                 onClick={() => toggleAttendance.mutateAsync({
                                                                     periodId: thisPeriodId || -1,
                                                                     attendance: false
-                                                                }).then(() => mySelectedPeriods.refetch()).then(() => attendTime.refetch())}>
+                                                                }).then(() => mySelectedPeriods.refetch()).then(() => attendTime.refetch()).catch((e) => alert(e.message))}>
                                                                 Will Attend
                                                             </td>
                                                         } else {
@@ -103,7 +98,7 @@ export default function Dash() {
                                                                 onClick={() => toggleAttendance.mutateAsync({
                                                                     periodId: thisPeriodId || -1,
                                                                     attendance: true
-                                                                }).then(() => mySelectedPeriods.refetch()).then(() => attendTime.refetch())}></td>
+                                                                }).then(() => mySelectedPeriods.refetch()).then(() => attendTime.refetch()).catch((e) => alert(e.message))}></td>
                                                         }
                                                     } else {
                                                         return <td key={timePeriod.id * periodCnt} className="bg-gray-400">N/A</td>

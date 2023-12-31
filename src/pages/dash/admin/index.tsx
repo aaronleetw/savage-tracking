@@ -30,7 +30,7 @@ export default function Dash() {
         <main className="">
             <DashboardHeader url="/dash/admin" />
             <div className="p-5 flex flex-col md:flex-row gap-5">
-                <nav className="flex flex-grow h-fit md:flex-col w-auto md:max-w-48 border border-emerald-700 rounded-lg">
+                <nav className="flex flex-grow h-fit md:flex-col w-fit md:max-w-48 border border-emerald-700 rounded-lg">
                     <button className={[
                         "p-1 px-2 text-lg font-bold border-r md:border-b rounded-l-lg md:rounded-none md:rounded-t-lg transition-colors",
                         currentPage === "config" ? "bg-emerald-600 border-none text-white" : "bg-white text-emerald-700"
