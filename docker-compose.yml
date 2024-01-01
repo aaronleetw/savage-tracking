@@ -38,8 +38,6 @@ services:
       interval: 5s
       timeout: 10s
       retries: 5
-    ports:
-      - 3001:5432
 
 volumes:
   pgdata: {}
