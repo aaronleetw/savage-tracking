@@ -3,7 +3,6 @@ version: '3'
 
 services:
   web:
-    container_name: web
     build:
       context: .
       dockerfile: ./Dockerfile
