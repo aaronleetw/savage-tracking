@@ -48,7 +48,7 @@ export default function Dash() {
                             }}>
                             <option value="">Select a date</option>
                             {
-                                Object.keys(periods.data || {}).map((date) => {
+                                Object.keys(periods.data ?? {}).map((date) => {
                                     return (<option key={date}>{date}</option>)
                                 })
                             }

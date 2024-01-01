@@ -1,15 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { api } from "~/utils/api";
 import { AddAttendance } from "~/utils/types";
 
 export default function ListView() {
-    const today = new Date();
-    
-    const [startDate, setStartDate] = useState(`${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`);
-    const [endDate, setEndDate] = useState(`${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`);
+    const [startDate, setStartDate] = useState<string>("");
+    const [endDate, setEndDate] = useState<string>("");
     const attendanceData = api.admin.getAttendanceFromRange.useQuery({
         start: startDate,
         end: endDate
@@ -23,6 +21,12 @@ export default function ListView() {
         event?.target.reset();
         attendanceData.refetch();
     }).catch((err) => console.log(err));
+
+    useEffect(() => {
+        const today = new Date();
+        setStartDate(today.toISOString().split("T")[0]!)
+        setEndDate(today.toISOString().split("T")[0]!)
+    }, [])
 
 
     return <div className="block">
@@ -47,8 +51,9 @@ export default function ListView() {
             </label>
             <button className="p-2 px-3 h-fit bg-emerald-600 text-white rounded-lg"
                 onClick={() => {
-                    setStartDate(`${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`);
-                    setEndDate(`${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`);
+                    const today = new Date();
+                    setStartDate(today.toISOString().split("T")[0]!);
+                    setEndDate(today.toISOString().split("T")[0]!);
                 }}>Today</button>
             {
                 (attendanceData.isLoading) && <div role="status">

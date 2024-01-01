@@ -1,0 +1,46 @@
+# docker-compose.dev.yml
+version: '3'
+
+services:
+  web:
+    container_name: web
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - .:/app/web
+    environment:
+      POSTGRES_ADDR: postgres
+      POSTGRES_DATABASE: savage_tracking
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/savage_tracking?schema=public
+      JWT_SECRET: secret
+      TZ: Asia/Taipei
+      RFID_PKEY: secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+    ports:
+      - 3000:3000
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: savage_tracking
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ["CMD", "pg_isready", "-U", "postgres", "-d", "savage_tracking"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    ports:
+      - 3001:5432
+
+volumes:
+  pgdata: {}

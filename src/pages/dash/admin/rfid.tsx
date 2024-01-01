@@ -73,7 +73,7 @@ export default function Dash() {
                                         if (lastRfid.data === "") return;
                                         setUserRfid.mutateAsync({
                                             username: user.username,
-                                            rfid: lastRfid.data || ""
+                                            rfid: lastRfid.data ?? ""
                                         }).then(() => users.refetch())
                                     }}>
                                         Select

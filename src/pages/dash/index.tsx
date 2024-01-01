@@ -51,11 +51,11 @@ export default function Dash() {
                     </div>
                     <div className={[
                             "border rounded-xl h-32 w-40 p-2 flex items-center justify-center flex-col mb-5",
-                            (actualAttendTime.data || 0) + (attendTime.data || 0) >= 30 ? "bg-emerald-500" : "bg-red-300"
+                            (actualAttendTime.data ?? 0) + (attendTime.data ?? 0) >= 30 ? "bg-emerald-500" : "bg-red-300"
                         ].join(" ")}>
                         <div className="text-center text-xl font-bold">預估總時數</div>
                         <div className="flex-grow flex items-center">
-                            <div className="text-center text-6xl font-bold">{((actualAttendTime.data || 0) + (attendTime.data || 0)).toFixed(1)}</div>
+                            <div className="text-center text-6xl font-bold">{((actualAttendTime.data ?? 0) + (attendTime.data ?? 0)).toFixed(1)}</div>
                         </div>
                     </div>
                 </div>
@@ -73,7 +73,7 @@ export default function Dash() {
                     </thead>
                     <tbody>
                         {
-                            Object.keys(periods.data || {}).map((date) => {
+                            Object.keys(periods.data ?? {}).map((date) => {
                                 periodCnt = 0;
                                 entered = false;
                                 return (
@@ -88,7 +88,7 @@ export default function Dash() {
                                                         if (mySelectedPeriods.data?.findIndex((period) => period == thisPeriodId) != -1) {
                                                             return <td key={timePeriod.id * periodCnt} className="bg-emerald-200 hover:cursor-pointer"
                                                                 onClick={() => toggleAttendance.mutateAsync({
-                                                                    periodId: thisPeriodId || -1,
+                                                                    periodId: thisPeriodId ?? -1,
                                                                     attendance: false
                                                                 }).then(() => mySelectedPeriods.refetch()).then(() => attendTime.refetch()).catch((e) => alert(e.message))}>
                                                                 Will Attend
@@ -96,7 +96,7 @@ export default function Dash() {
                                                         } else {
                                                             return <td key={timePeriod.id * periodCnt} className="bg-sky-100 hover:cursor-pointer"
                                                                 onClick={() => toggleAttendance.mutateAsync({
-                                                                    periodId: thisPeriodId || -1,
+                                                                    periodId: thisPeriodId ?? -1,
                                                                     attendance: true
                                                                 }).then(() => mySelectedPeriods.refetch()).then(() => attendTime.refetch()).catch((e) => alert(e.message))}></td>
                                                         }
@@ -114,7 +114,7 @@ export default function Dash() {
                                                     const thisPeriodEnd = new Date(date);
                                                     thisPeriodEnd.setHours(parseInt(timePeriod.end.split(":")[0]!), parseInt(timePeriod.end.split(":")[1]!), 0, 0)
 
-                                                    for (let i = attCnt; i < (myAttendance.data || []).length; i++) {
+                                                    for (let i = attCnt; i < (myAttendance.data ?? []).length; i++) {
                                                         const thisAtt = myAttendance.data![i];
                                                         if (thisAtt?.datetime! < thisPeriodStart) continue;
                                                         if (thisAtt?.datetime! > thisPeriodEnd) {

@@ -18,10 +18,10 @@ export const adminRouter = createTRPCRouter({
                 username: input.username,
             }
         }).then((user) => {
-            const result = compareSync(input.password, user?.password || "");
+            const result = compareSync(input.password, user?.password ?? "");
             if (result) {
                 const session = PublicUserType.parse(user)!;
-                const token = jwt.sign(session, process.env.JWT_SECRET || "", { expiresIn: "1d" });
+                const token = jwt.sign(session, process.env.JWT_SECRET ?? "", { expiresIn: "1d" });
                 ctx.res.setHeader("Set-Cookie", `token=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${60 * 60 * 24};`);
                 return {
                     status: "success",
@@ -57,7 +57,7 @@ export const adminRouter = createTRPCRouter({
                     username: ctx.session?.username,
                 }
             }).then(async (user) => {
-                const result = compareSync(input.oldPassword, user?.password || "");
+                const result = compareSync(input.oldPassword, user?.password ?? "");
                 if (result) {
                     await ctx.db.user.update({
                         where: {
@@ -241,7 +241,7 @@ export const adminRouter = createTRPCRouter({
                     timePeriods.forEach(async (timePeriod) => {
                         await ctx.db.period.create({
                             data: {
-                                date: new Date(input.date),
+                                date: new Date(input.date.replace(/-/g, "/")),
                                 timePeriodId: timePeriod.id,
                             },
                         });

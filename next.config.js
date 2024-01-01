@@ -17,6 +17,11 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  output: 'standalone', // for docker
 };
 
 export default config;

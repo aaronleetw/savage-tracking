@@ -43,7 +43,7 @@ export default function Periods() {
             </thead>
             <tbody>
                 {
-                    Object.keys(periods.data || {}).map((date) => {
+                    Object.keys(periods.data ?? {}).map((date) => {
                         periodCnt = 0;
                         return (
                             <tr className="*:p-1 *:border" key={date}>

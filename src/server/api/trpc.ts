@@ -38,7 +38,7 @@ export const createTRPCContext = (_opts: CreateNextContextOptions) => {
   // Verify JWT
   let session = PublicUserType.parse(undefined);
   try {
-    jwt.verify(token || "", process.env.JWT_SECRET || "", (err, decoded) => {
+    jwt.verify(token ?? "", process.env.JWT_SECRET ?? "", (err, decoded) => {
       if (err) {
         session = undefined;
       } else {
