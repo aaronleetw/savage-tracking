@@ -99,7 +99,7 @@ export default function UserView() {
                 </div>
                 <div className={[
                     "border rounded-xl h-32 w-40 p-2 flex items-center justify-center flex-col",
-                    (userActualAttendTime.data ?? 0) + (userAttendTime.data ?? 0) >= 30 ? "bg-emerald-500" : "bg-red-300"
+                    (userActualAttendTime.data ?? 0) + (userAttendTime.data ?? 0) >= 100 ? "bg-emerald-500" : "bg-red-300"
                 ].join(" ")}>
                     <div className="text-center text-xl font-bold">預估總時數</div>
                     <div className="flex-grow flex items-center">
