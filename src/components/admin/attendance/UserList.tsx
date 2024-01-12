@@ -20,7 +20,7 @@ export default function UserList() {
         <tbody>
             {
                 users.data?.map((user) => (
-                    <tr className={`*:p-1 *: ${(user.selectedTime + user.actualTime) >= 100 ? "*:bg-emerald-200" : "*:bg-red-100"}`} key={user.username}>
+                    <tr className={`*:p-1 *: ${(user.selectedTime + user.actualTime) >= 95 ? "*:bg-emerald-200" : "*:bg-red-100"}`} key={user.username}>
                         <td>{user.username}</td>
                         <td>{user.grade}</td>
                         <td>{user.class}</td>
