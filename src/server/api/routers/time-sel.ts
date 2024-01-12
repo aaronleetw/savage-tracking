@@ -119,9 +119,8 @@ export const toggleAttendance = async (ctx: Context, input: { periodId: number, 
         if (!period) throw new TRPCError({ code: "NOT_FOUND", message: "Period not found" });
 
         if (checkWeekInAdvance) {
-            const weekInAdvance = new Date();
-            weekInAdvance.setDate(weekInAdvance.getDate() + 7);
-            if (period.date < weekInAdvance) throw new TRPCError({ code: "BAD_REQUEST", message: "Period is not a week in advance. Please contact HR." });
+            const weekInAdvance = new Date("2024/01/16 23:59");
+            if (new Date() > weekInAdvance) throw new TRPCError({ code: "BAD_REQUEST", message: "Time selection period has passed. Please contact HR." });
         }
 
         if (input.attendance) {
