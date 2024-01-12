@@ -76,7 +76,7 @@ export default function Dash() {
                         <li>1/20/2024 ~ 2/7/2024 開放時間為 09:00 ~ 19:00</li>
                     </ul>
                 </div>
-                <div className="text-2xl font-bold mb-4">請點選下方切換狀態 (&gt; 95 小時會變綠燈)</div>
+                <div className="text-2xl font-bold mb-4">請點選下方藍色方塊切換狀態 (&gt; 95 小時會變綠燈)</div>
                 <table className="table-auto border-collapse border-2 border-black w-fit mb-5">
                     <thead>
                         <tr className="*:p-1 *:border border-b-2 border-b-black">
