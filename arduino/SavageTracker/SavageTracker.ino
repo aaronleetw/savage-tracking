@@ -3,9 +3,12 @@
 #include <LiquidCrystal_I2C.h>
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
-#include <WiFiClient.h>
+#include <ESP8266WiFiMulti.h>
+#include <WiFiClientSecureBearSSL.h>
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
+
+#include "cert.h"
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // set the LCD address to 0x27 for a 16 chars and 2 line display
 
@@ -15,13 +18,15 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);  // set the LCD address to 0x27 for a 16 cha
 
 #define WIFI_SSID "SEA"
 #define WIFI_PASS "sara9914"
-#define RECURL "http://192.168.0.11:5000/api/rfid"
-#define KEY "secret"
+#define RECURL "tracking.aarontech.xyz/api/rfid"
+#define KEY "5fbda4564acb0d49f260707a"
 
 MFRC522 rfid(SS_PIN, RST_PIN);  // Instance of the class
 
 bool processingReq = false;
-WiFiClient wifiClient;
+ESP8266WiFiMulti wifi;
+
+X509List cert (cert_ISRG_Root_X1);
 
 int cursorPos = 0;
 
@@ -76,9 +81,12 @@ void loop() {
   serializeJson(body, bodych);
   Serial.println(bodych);
 
+  WiFiClientSecure wifiClient;
+  wifiClient.setTrustAnchors(&cert);
+
   HTTPClient httpClient;
   httpClient.useHTTP10(true);
-  httpClient.begin(wifiClient, RECURL);
+  httpClient.begin(wifiClient, RECURL, 443);
   httpClient.addHeader("Content-Type", "application/json");
   Serial.print("RECURL: ");
   Serial.println(RECURL);
@@ -168,5 +176,21 @@ void connectWifi() {
     lcd.print(".");
     delay(500);
   }
+  configTime(8 * 3600, 0, "pool.ntp.org", "time.nist.gov");
+
+  Serial.print("Waiting for NTP time sync: ");
+  time_t now = time(nullptr);
+  while (now < 8 * 3600 * 2) {
+    delay(500);
+    Serial.print(".");
+    now = time(nullptr);
+  }
+
+  Serial.println("");
+  struct tm timeinfo;
+  gmtime_r(&now, &timeinfo);
+  Serial.print("Current time: ");
+  Serial.print(asctime(&timeinfo));
+
   lcdOut("WiFi OK!");
 }
