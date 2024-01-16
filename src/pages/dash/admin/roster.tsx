@@ -8,9 +8,10 @@ import { api } from "~/utils/api";
 export default function Dash() {
     const { push } = useRouter();
     const [date, setDate] = useState(new Date());
-    const [genDate, setGenDate] = useState(new Date(0));
+    const [genDate, setGenDate] = useState(new Date());
 
     const { toPDF, targetRef: pdfRef } = usePDF({ filename: `入校名單_${date.toLocaleDateString().replace("/", "-")}.pdf` });
+    const { toPDF: bigToPdf, targetRef: bigPdfRef } = usePDF({ filename: `Build_Season_總表.pdf` });
 
     const isLoggedIn = api.admin.isLoggedIn.useQuery();
     const periods = api.admin.getPeriods.useQuery();
@@ -18,7 +19,9 @@ export default function Dash() {
     const roster = api.admin.getRoster.useQuery({
         date: date
     });
-
+    const allRoster = api.admin.getAllRoster.useQuery();
+    const allPeriodsHeadcount = api.admin.getAllPeriodsHeadcount.useQuery();
+    
     useEffect(() => {
         if (isLoggedIn.failureCount > 0) {
             push("/");
@@ -60,6 +63,16 @@ export default function Dash() {
                         }}>
                         Download PDF
                     </button>
+                    <button className="h-fit bg-emerald-600 px-3 py-2 rounded text-white focus:ring focus:ring-emerald-200 focus:ring-opacity-70 disabled:bg-emerald-400 mb-5" disabled={roster.isLoading}
+                        onClick={() => {
+                            bigToPdf({
+                                page: {
+                                    orientation: "landscape"
+                                }
+                            });
+                        }}>
+                        Download 總表 PDF
+                    </button>
                     {
                         (roster.isLoading) && <div role="status">
                             <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-emerald-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -80,6 +93,7 @@ export default function Dash() {
                     <table className="table-auto border-collapse border-2 border-black w-fit mt-3 font-kai text-lg">
                         <thead>
                             <tr className="*:p-1 *:border border-b-2 border-b-black">
+                                <th>學號</th>
                                 <th>年級</th>
                                 <th>班級</th>
                                 <th>座號</th>
@@ -95,6 +109,7 @@ export default function Dash() {
                             {
                                 roster.data?.map((user) => {
                                     return (<tr key={user.id} className="*:p-1 *:border">
+                                        <td>{user.username}</td>
                                         <td>{user.grade}</td>
                                         <td>{user.class}</td>
                                         <td>{user.number}</td>
@@ -114,6 +129,73 @@ export default function Dash() {
                         </tbody>
                     </table>
                 </div>
+                <hr />
+                <div className="pdf my-5 w-fit p-5" ref={bigPdfRef}>
+                    <h1 className="text-3xl font-extrabold font-kai mb-2">機器人研究社 Build Season 總表</h1>
+                    <div className="flex mb-2 justify-between font-extrabold font-kai items-end">
+                        <h3 className="m-0">列印時間: {genDate.toLocaleString()}</h3>
+                    </div>
+                    <table className="table-auto border-collapse border-2 border-black w-fit mt-3 font-kai text-lg">
+                        <thead>
+                            <tr className="*:p-1 *:border">
+                                <th rowSpan={2}>年級</th>
+                                <th rowSpan={2}>班級</th>
+                                <th rowSpan={2}>座號</th>
+                                <th rowSpan={2}>姓名</th>
+                                {
+                                    Object.keys(periods.data ?? {}).map((date) => {
+                                        return (<th key={date} colSpan={
+                                            periods.data![date]!.length
+                                        } className="w-24">{date}</th>)
+                                    })                                
+                                }
+                            </tr>
+                            <tr className="*:p-1 *:border border-b-2 border-b-black">
+                                {
+                                    Object.keys(periods.data ?? {}).map((date) => {
+                                        return periods.data![date]!.map((period) => {
+                                            return (<th key={period.id}>{period.timePeriod.name}</th>)
+                                        })
+                                    })                                
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                allRoster.data?.map((user) => {
+                                    return (<tr key={user.id} className="*:p-1 *:border">
+                                        <td>{user.grade}</td>
+                                        <td>{user.class}</td>
+                                        <td>{user.number}</td>
+                                        <td>{user.name}</td>
+                                        {
+                                            Object.keys(periods.data ?? {}).map((date) => {
+                                                return periods.data![date]!.map((thisPeriod) => {
+                                                    if (user.periods.find((period) => period.id === thisPeriod.id)) {
+                                                        return (<td key={thisPeriod.id * user.id}>✔</td>)
+                                                    } else {
+                                                        return (<td key={thisPeriod.id * user.id}></td>)
+                                                    }
+                                                })
+                                            })
+                                    }
+                                    </tr>)
+                                })
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr className="*:p-1 *:border">
+                                <td colSpan={4}>總計</td>
+                                {
+                                    allPeriodsHeadcount.data?.map((headcount) => {
+                                        return (<td key={headcount.id}>{headcount._count.users}</td>)
+                                    })
+                                }
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
             </div>
         </main>
     </>)

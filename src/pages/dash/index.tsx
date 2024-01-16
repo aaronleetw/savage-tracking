@@ -38,17 +38,17 @@ export default function Dash() {
             <div className="p-5">
                 <div className="flex gap-2">
                     <div className="border rounded-xl h-32 w-40 p-2 flex items-center justify-center flex-col mb-4 bg-gray-300">
-                        <div className="text-center text-2xl font-bold">已選取時數</div>
+                        <div className="text-center text-2xl font-bold">時數</div>
                         <div className="flex-grow flex items-center">
                             <div className="text-center text-6xl font-bold">{attendTime.data}</div>
                         </div>
                     </div>
-                    <div className="border rounded-xl h-32 w-40 p-2 flex items-center justify-center flex-col mb-4 bg-gray-300">
+                    {/* <div className="border rounded-xl h-32 w-40 p-2 flex items-center justify-center flex-col mb-4 bg-gray-300">
                         <div className="text-center text-xl font-bold">實際出席時數</div>
                         <div className="flex-grow flex items-center">
                             <div className="text-center text-6xl font-bold">{actualAttendTime.data?.toFixed(1)}</div>
                         </div>
-                    </div>
+                    </div> */}
                     <div className={[
                             "border rounded-xl h-32 w-40 p-2 flex items-center justify-center flex-col mb-4",
                             (actualAttendTime.data ?? 0) + (attendTime.data ?? 0) >= 95 ? "bg-emerald-500" : "bg-red-300"
@@ -97,7 +97,8 @@ export default function Dash() {
                                     <tr className="*:p-1 *:border" key={date}>
                                         <td>{date}</td>
                                         {
-                                            new Date(date).setHours(0, 0, 0, 0) > new Date().getTime() ? (
+                                            // FIXME: I am temporaily overriding attendance
+                                            // new Date(date).setHours(0, 0, 0, 0) > new Date().getTime() ? (
                                                 timePeriods.data?.map((timePeriod) => {
                                                     const thisPeriodId = periods.data![date]![periodCnt]?.id!;
                                                     if (periods.data![date]![periodCnt]?.timePeriodId == timePeriod.id) {
@@ -121,43 +122,43 @@ export default function Dash() {
                                                         return <td key={timePeriod.id * periodCnt} className="bg-gray-400">N/A</td>
                                                     }
                                                 })
-                                            ) : (
-                                                timePeriods.data?.map((timePeriod) => {
-                                                    periodCnt++;
+                                            // ) : (
+                                            //     timePeriods.data?.map((timePeriod) => {
+                                            //         periodCnt++;
 
-                                                    let data = "";
-                                                    const thisPeriodStart = new Date(date);
-                                                    thisPeriodStart.setHours(parseInt(timePeriod.start.split(":")[0]!), parseInt(timePeriod.start.split(":")[1]!), 0, 0)
-                                                    const thisPeriodEnd = new Date(date);
-                                                    thisPeriodEnd.setHours(parseInt(timePeriod.end.split(":")[0]!), parseInt(timePeriod.end.split(":")[1]!), 0, 0)
+                                            //         let data = "";
+                                            //         const thisPeriodStart = new Date(date);
+                                            //         thisPeriodStart.setHours(parseInt(timePeriod.start.split(":")[0]!), parseInt(timePeriod.start.split(":")[1]!), 0, 0)
+                                            //         const thisPeriodEnd = new Date(date);
+                                            //         thisPeriodEnd.setHours(parseInt(timePeriod.end.split(":")[0]!), parseInt(timePeriod.end.split(":")[1]!), 0, 0)
 
-                                                    for (let i = attCnt; i < (myAttendance.data ?? []).length; i++) {
-                                                        const thisAtt = myAttendance.data![i];
-                                                        if (thisAtt?.datetime! < thisPeriodStart) continue;
-                                                        if (thisAtt?.datetime! > thisPeriodEnd) {
-                                                            attCnt = i;
-                                                            break;
-                                                        }
-                                                        if (!entered) {
-                                                            data += `${data !== "" ? " / " : ""}${thisAtt?.datetime!.toLocaleTimeString()} ~ `;
-                                                        } else {
-                                                            data += `${thisAtt?.datetime!.toLocaleTimeString()}`;
-                                                        }
-                                                        entered = !entered;
-                                                    }
+                                            //         for (let i = attCnt; i < (myAttendance.data ?? []).length; i++) {
+                                            //             const thisAtt = myAttendance.data![i];
+                                            //             if (thisAtt?.datetime! < thisPeriodStart) continue;
+                                            //             if (thisAtt?.datetime! > thisPeriodEnd) {
+                                            //                 attCnt = i;
+                                            //                 break;
+                                            //             }
+                                            //             if (!entered) {
+                                            //                 data += `${data !== "" ? " / " : ""}${thisAtt?.datetime!.toLocaleTimeString()} ~ `;
+                                            //             } else {
+                                            //                 data += `${thisAtt?.datetime!.toLocaleTimeString()}`;
+                                            //             }
+                                            //             entered = !entered;
+                                            //         }
 
-                                                    if (entered && data === "" && periodCnt !== timePeriods.data!.length) {
-                                                        return <td key={timePeriod.id * periodCnt} className="bg-green-700 text-white"></td>
-                                                    }
-                                                    if (entered && periodCnt === timePeriods.data!.length) {
-                                                        return <td key={timePeriod.id * periodCnt} className="bg-yellow-700 text-white">{data}</td>
-                                                    }
-                                                    if (data === "") {
-                                                        return <td key={timePeriod.id * periodCnt} className="bg-gray-500 text-white">Absent</td>
-                                                    }
-                                                    return <td key={timePeriod.id * periodCnt} className="bg-green-700 text-white">{data}</td>
-                                                })
-                                            )
+                                            //         if (entered && data === "" && periodCnt !== timePeriods.data!.length) {
+                                            //             return <td key={timePeriod.id * periodCnt} className="bg-green-700 text-white"></td>
+                                            //         }
+                                            //         if (entered && periodCnt === timePeriods.data!.length) {
+                                            //             return <td key={timePeriod.id * periodCnt} className="bg-yellow-700 text-white">{data}</td>
+                                            //         }
+                                            //         if (data === "") {
+                                            //             return <td key={timePeriod.id * periodCnt} className="bg-gray-500 text-white">Absent</td>
+                                            //         }
+                                            //         return <td key={timePeriod.id * periodCnt} className="bg-green-700 text-white">{data}</td>
+                                            //     })
+                                            // )
                                         }
                                     </tr>
                                 )

@@ -16,11 +16,12 @@ export const attendTime = async (ctx: Context, username: string) => {
                         }
                     }
                 },
-                where: {
-                    date: {
-                        gte: new Date(new Date().setHours(23, 59, 59, 999)),
-                    }
-                }
+                // FIXME: I am temporaily overriding attendance
+                // where: {
+                //     date: {
+                //         gte: new Date(new Date().setHours(23, 59, 59, 999)),
+                //     }
+                // }
             }
         }
     });
