@@ -1,28 +1,55 @@
-# Create T3 App
+# SavageTracking
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Time tracking app for FRC build season personnel management.
 
-## What's next? How do I make an app with this?
+Developed by Aaron (me), and used by my FRC Team 6947 Savage Tumaz throughout the 2023-2024 CRESCENDO season, this application serves a dual purpose. Firstly, it logs the hours dedicated by team members during the intensive build season. These hours are a factor in determining eligibility for participation in regional events for our team. Additionally, the application maintains an up-to-date roster, essential for compliance with our school's stringent access control policies.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+This project was a part of my Dean's List Award submission that got me named as Finalist at the Central Valley Regional during the 2024 season.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Tech Stack
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+This project is written using the [T3 stack](https://create.t3.gg/).
 
-## Learn More
+### Frontend
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+- [Typescript](https://www.typescriptlang.org/)
+- [Next.js](https://nextjs.org/)
+- [React](https://reactjs.org/)
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### Backend
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+- [tRPC](https://trpc.io/)
+- [Prisma](https://www.prisma.io/)
+- [PostgreSQL](https://www.postgresql.org/)
 
-## How do I deploy this?
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+## Features
+
+### User-facing
+- Connect with Arduino RFID device to record attendance
+- Allow users to select the periods in which they will attend
+
+### Administration
+
+- View attendance by user or by time
+- Generate daily roster or complete roster
+- Easy RFID setup
+- 3D printable enclosure
+    - ESP8266 (WEMOS D1 R2 V2.1)
+    - RC522 (MFRC522)
+    - RSI1602 16x2 LCD Display (LiquidCrystal)
+- Dynamic periods allowed for selection
+- Set required hours
+- Set time to allow for period selection
+
+
+## Pictures
+
+![Enclosure](screenshots/enclosure.jpg)
+![Home Page](screenshots/home.png)
+![Roster Generation](screenshots/roster.png)
+![Configuring Time Periods](screenshots/config.png)
+![Toggling Available Periods](screenshots/periods.png)
+![RFID Management](screenshots/rfid.png)
+![Users' Logged Hours](screenshots/users.png)
+![User Management](screenshots/usermgmt.png)
