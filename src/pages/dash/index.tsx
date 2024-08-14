@@ -43,12 +43,12 @@ export default function Dash() {
                             <div className="text-center text-6xl font-bold">{attendTime.data}</div>
                         </div>
                     </div>
-                    <div className="border rounded-xl h-32 w-40 p-2 flex items-center justify-center flex-col mb-4 bg-gray-300">
+                    {/* <div className="border rounded-xl h-32 w-40 p-2 flex items-center justify-center flex-col mb-4 bg-gray-300">
                         <div className="text-center text-xl font-bold">實際出席時數</div>
                         <div className="flex-grow flex items-center">
                             <div className="text-center text-6xl font-bold">{actualAttendTime.data?.toFixed(1)}</div>
                         </div>
-                    </div>
+                    </div> */}
                     <div className={[
                             "border rounded-xl h-32 w-40 p-2 flex items-center justify-center flex-col mb-4",
                             (actualAttendTime.data ?? 0) + (attendTime.data ?? 0) >= 95 ? "bg-emerald-500" : "bg-red-300"
