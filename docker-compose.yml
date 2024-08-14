@@ -14,9 +14,9 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/savage_tracking?schema=public
-      JWT_SECRET: secret
+      JWT_SECRET: "CHANGE_THIS"
       TZ: Asia/Taipei
-      RFID_PKEY: secret
+      RFID_PKEY: "CHANGE_THIS" 
     depends_on:
       postgres:
         condition: service_healthy

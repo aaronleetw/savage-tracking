@@ -16,11 +16,12 @@ export const attendTime = async (ctx: Context, username: string) => {
                         }
                     }
                 },
-                where: {
-                    date: {
-                        gte: new Date(new Date().setHours(23, 59, 59, 999)),
-                    }
-                }
+                // FIXME: I am temporaily overriding attendance
+                // where: {
+                //     date: {
+                //         gte: new Date(new Date().setHours(23, 59, 59, 999)),
+                //     }
+                // }
             }
         }
     });
@@ -119,8 +120,8 @@ export const toggleAttendance = async (ctx: Context, input: { periodId: number, 
         if (!period) throw new TRPCError({ code: "NOT_FOUND", message: "Period not found" });
 
         if (checkWeekInAdvance) {
-            const weekInAdvance = new Date("2024/01/16 23:59");
-            if (new Date() > weekInAdvance) throw new TRPCError({ code: "BAD_REQUEST", message: "Time selection period has passed. Please contact HR." });
+            const weekInAdvance = new Date("2024/07/19 18:00");
+            if (new Date() > weekInAdvance || period.date < weekInAdvance) throw new TRPCError({ code: "BAD_REQUEST", message: "Time selection period has passed. Please contact HR." });
         }
 
         if (input.attendance) {

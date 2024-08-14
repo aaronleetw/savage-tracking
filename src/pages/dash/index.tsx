@@ -36,9 +36,9 @@ export default function Dash() {
         <main className="">
             <DashboardHeader url="/dash" />
             <div className="p-5">
-                <div className="flex gap-2">
+                {/*<div className="flex gap-2">
                     <div className="border rounded-xl h-32 w-40 p-2 flex items-center justify-center flex-col mb-4 bg-gray-300">
-                        <div className="text-center text-2xl font-bold">已選取時數</div>
+                        <div className="text-center text-2xl font-bold">時數</div>
                         <div className="flex-grow flex items-center">
                             <div className="text-center text-6xl font-bold">{attendTime.data}</div>
                         </div>
@@ -58,25 +58,20 @@ export default function Dash() {
                             <div className="text-center text-6xl font-bold">{((actualAttendTime.data ?? 0) + (attendTime.data ?? 0)).toFixed(1)}</div>
                         </div>
                     </div>
-                </div>
+                </div>*/}
                 <div className="p-2 mb-4 border border-yellow-500 bg-yellow-100 max-w-full w-[40rem] rounded-md">
                     <ul className="list-disc ml-5 mb-2">
                         <li>上午時段 (早) 為 09:00 ~ 12:00</li>
-                        <ul className="list-[circle] ml-5 text-red-500">
-                            <li>為獎勵上午時段到校，實到 3 小時以 4 小時計算時數</li>
-                        </ul>
                         <li>下午時段 (午) 為 13:00 ~ 16:00</li>
                         <li>晚間時段 (晚) 為 16:00 ~ 19:00</li>
                     </ul>
                     <hr className="border-yellow-500" />
                     <ul className="list-disc ml-5 mt-2">
-                        <li>1/16/2024 為正常社課時間，不列入時數計算</li>
-                        <li>1/17/2024、1/18/2024 開放時段為放學後 17:00 ~ 19:30 (請直接選擇 [晚] 時段)</li>
-                        <li>1/19/2024 開放時間為結業式後 12:00 ~ 17:00 (請直接選擇 [午] 時段)</li>
-                        <li>1/20/2024 ~ 2/7/2024 開放時間為 09:00 ~ 19:00</li>
+                        <li>暑假開放檢修<span className="text-red-500">非強制參加</span>也沒有最低時數限制</li>
+			<li>本系統開放填寫期限為 07/19 18:00</li>
                     </ul>
                 </div>
-                <div className="text-2xl font-bold mb-4">請點選下方藍色方塊切換狀態 (&gt; 95 小時會變綠燈)</div>
+                <div className="text-2xl font-bold mb-4">請點選下方藍色方塊切換狀態</div>
                 <table className="table-auto border-collapse border-2 border-black w-fit mb-5">
                     <thead>
                         <tr className="*:p-1 *:border border-b-2 border-b-black">
@@ -97,7 +92,8 @@ export default function Dash() {
                                     <tr className="*:p-1 *:border" key={date}>
                                         <td>{date}</td>
                                         {
-                                            new Date(date).setHours(0, 0, 0, 0) > new Date().getTime() ? (
+                                            // FIXME: I am temporaily overriding attendance
+                                            // new Date(date).setHours(0, 0, 0, 0) > new Date().getTime() ? (
                                                 timePeriods.data?.map((timePeriod) => {
                                                     const thisPeriodId = periods.data![date]![periodCnt]?.id!;
                                                     if (periods.data![date]![periodCnt]?.timePeriodId == timePeriod.id) {
@@ -121,43 +117,43 @@ export default function Dash() {
                                                         return <td key={timePeriod.id * periodCnt} className="bg-gray-400">N/A</td>
                                                     }
                                                 })
-                                            ) : (
-                                                timePeriods.data?.map((timePeriod) => {
-                                                    periodCnt++;
+                                            // ) : (
+                                            //     timePeriods.data?.map((timePeriod) => {
+                                            //         periodCnt++;
 
-                                                    let data = "";
-                                                    const thisPeriodStart = new Date(date);
-                                                    thisPeriodStart.setHours(parseInt(timePeriod.start.split(":")[0]!), parseInt(timePeriod.start.split(":")[1]!), 0, 0)
-                                                    const thisPeriodEnd = new Date(date);
-                                                    thisPeriodEnd.setHours(parseInt(timePeriod.end.split(":")[0]!), parseInt(timePeriod.end.split(":")[1]!), 0, 0)
+                                            //         let data = "";
+                                            //         const thisPeriodStart = new Date(date);
+                                            //         thisPeriodStart.setHours(parseInt(timePeriod.start.split(":")[0]!), parseInt(timePeriod.start.split(":")[1]!), 0, 0)
+                                            //         const thisPeriodEnd = new Date(date);
+                                            //         thisPeriodEnd.setHours(parseInt(timePeriod.end.split(":")[0]!), parseInt(timePeriod.end.split(":")[1]!), 0, 0)
 
-                                                    for (let i = attCnt; i < (myAttendance.data ?? []).length; i++) {
-                                                        const thisAtt = myAttendance.data![i];
-                                                        if (thisAtt?.datetime! < thisPeriodStart) continue;
-                                                        if (thisAtt?.datetime! > thisPeriodEnd) {
-                                                            attCnt = i;
-                                                            break;
-                                                        }
-                                                        if (!entered) {
-                                                            data += `${data !== "" ? " / " : ""}${thisAtt?.datetime!.toLocaleTimeString()} ~ `;
-                                                        } else {
-                                                            data += `${thisAtt?.datetime!.toLocaleTimeString()}`;
-                                                        }
-                                                        entered = !entered;
-                                                    }
+                                            //         for (let i = attCnt; i < (myAttendance.data ?? []).length; i++) {
+                                            //             const thisAtt = myAttendance.data![i];
+                                            //             if (thisAtt?.datetime! < thisPeriodStart) continue;
+                                            //             if (thisAtt?.datetime! > thisPeriodEnd) {
+                                            //                 attCnt = i;
+                                            //                 break;
+                                            //             }
+                                            //             if (!entered) {
+                                            //                 data += `${data !== "" ? " / " : ""}${thisAtt?.datetime!.toLocaleTimeString()} ~ `;
+                                            //             } else {
+                                            //                 data += `${thisAtt?.datetime!.toLocaleTimeString()}`;
+                                            //             }
+                                            //             entered = !entered;
+                                            //         }
 
-                                                    if (entered && data === "" && periodCnt !== timePeriods.data!.length) {
-                                                        return <td key={timePeriod.id * periodCnt} className="bg-green-700 text-white"></td>
-                                                    }
-                                                    if (entered && periodCnt === timePeriods.data!.length) {
-                                                        return <td key={timePeriod.id * periodCnt} className="bg-yellow-700 text-white">{data}</td>
-                                                    }
-                                                    if (data === "") {
-                                                        return <td key={timePeriod.id * periodCnt} className="bg-gray-500 text-white">Absent</td>
-                                                    }
-                                                    return <td key={timePeriod.id * periodCnt} className="bg-green-700 text-white">{data}</td>
-                                                })
-                                            )
+                                            //         if (entered && data === "" && periodCnt !== timePeriods.data!.length) {
+                                            //             return <td key={timePeriod.id * periodCnt} className="bg-green-700 text-white"></td>
+                                            //         }
+                                            //         if (entered && periodCnt === timePeriods.data!.length) {
+                                            //             return <td key={timePeriod.id * periodCnt} className="bg-yellow-700 text-white">{data}</td>
+                                            //         }
+                                            //         if (data === "") {
+                                            //             return <td key={timePeriod.id * periodCnt} className="bg-gray-500 text-white">Absent</td>
+                                            //         }
+                                            //         return <td key={timePeriod.id * periodCnt} className="bg-green-700 text-white">{data}</td>
+                                            //     })
+                                            // )
                                         }
                                     </tr>
                                 )

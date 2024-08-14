@@ -5,7 +5,7 @@ import { adminProcedure, createTRPCRouter, loggedInProcedure, publicProcedure } 
 import { AddAttendance, AddPeriods, AddTimePeriodSchema, AddUserSchema, ChgPasswordSchema, DateRange, LoginSchema, PublicUserType } from "~/utils/types";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { Period } from "@prisma/client";
+import { Period, TimePeriod } from "@prisma/client";
 import { lastGotRfid, rfidAttendance, setRfidAttendance } from "~/utils/rfid";
 import { actualAttendTime, attendTime as selectedAttendTime, toggleAttendance } from "./time-sel";
 
@@ -200,13 +200,32 @@ export const adminRouter = createTRPCRouter({
     getPeriods: loggedInProcedure
         .query(async ({ ctx }) => {
             return await ctx.db.period.findMany({
+                include: {
+                    timePeriod: true
+                },
                 orderBy: [{
                     date: "asc",
                 }, {
                     timePeriodId: "asc",
                 }],
             }).then((periods) => {
-                const groupedPeriods: { [key: string]: Period[] } = {};
+                const groupedPeriods: { [key: string]: ({
+                    timePeriod: {
+                        id: number;
+                        name: string;
+                        start: string;
+                        end: string;
+                        createdAt: Date;
+                        updatedAt: Date;
+                    };
+                } & {
+                    id: number;
+                    date: Date;
+                    timePeriodId: number;
+                    collecting: boolean;
+                    createdAt: Date;
+                    updatedAt: Date;
+                })[]} = {};
                 periods.forEach((period) => {
                     const dateStr = period.date.toLocaleDateString();
                     if (groupedPeriods[dateStr] === undefined) {
@@ -402,6 +421,55 @@ export const adminRouter = createTRPCRouter({
                 message: "RFID attendance toggled.",
             };
         }),
+    getAllRoster: adminProcedure
+        .query(async ({ ctx }) => {
+            return await ctx.db.user.findMany({
+                select: {
+                    id: true,
+                    name: true,
+                    grade: true,
+                    class: true,
+                    number: true,
+                    periods: {
+                        select: {
+                            id: true,
+                        },
+                    },
+                },
+                orderBy: [
+                    {
+                        grade: "asc",
+                    },
+                    {
+                        class: "asc",
+                    },
+                    {
+                        number: "asc",
+                    },
+                ]
+            })
+        }),
+    getAllPeriodsHeadcount: adminProcedure
+        .query(async ({ ctx }) => {
+            return await ctx.db.period.findMany({
+                select: {
+                    id: true,
+                    _count: {
+                        select: {
+                            users: true,
+                        }
+                    }
+                },
+                orderBy: [
+                    {
+                        date: "asc",
+                    },
+                    {
+                        timePeriodId: "asc",
+                    },
+                ]
+            })
+        }),
     getRoster: adminProcedure
         .input(z.object({ date: z.date()}))
         .query(async ({ input, ctx }) => {
@@ -415,6 +483,7 @@ export const adminRouter = createTRPCRouter({
                 },
                 select: {
                     id: true,
+                    username: true,
                     name: true,
                     grade: true,
                     class: true,
